@@ -89,6 +89,8 @@ class SendThread implements Runnable {
 
 //        System.out.println("watek wysylajacy");
 
+        nick = nick.substring(4, nick.length());
+
         InetAddress group = null;
         try {
             group = InetAddress.getByName("228.5.6.7");
@@ -107,8 +109,6 @@ class SendThread implements Runnable {
 
         while (true) {
 
-
-            nick = nick.substring(4, nick.length());
             String msg = in.nextLine();
             msg = "MSG " + nick + ": " + msg;
             DatagramPacket dp = new DatagramPacket(msg.getBytes(), msg.length(),
