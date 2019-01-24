@@ -23,17 +23,15 @@ class ListenThread implements Runnable {
     @Override
     public void run() {
 
-//        System.out.println("watek odbierajacy");
-
         InetAddress group = null;
         try {
-            group = InetAddress.getByName("228.5.6.7");
+            group = InetAddress.getByName("239.0.0.222");
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
         MulticastSocket socket = null;
         try {
-            socket = new MulticastSocket(6789);
+            socket = new MulticastSocket(5000);
             socket.joinGroup(group);
         } catch (IOException e) {
             e.printStackTrace();
@@ -55,7 +53,7 @@ class ListenThread implements Runnable {
                 if (received.equals(nick)) {
                     String nickBusy = nick + " BUSY";
                     DatagramPacket dp = new DatagramPacket(nickBusy.getBytes(), nickBusy.length(),
-                            group, 6789);
+                            group, 5000);
                     socket.send(dp);
                 } else if (received.equals(nick + " BUSY")) {
                     // nie rob nic

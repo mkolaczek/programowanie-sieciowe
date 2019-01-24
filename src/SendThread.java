@@ -21,19 +21,17 @@ class SendThread implements Runnable {
     @Override
     public void run() {
 
-//        System.out.println("watek wysylajacy");
-
         nick = nick.substring(4, nick.length());
 
         InetAddress group = null;
         try {
-            group = InetAddress.getByName("228.5.6.7");
+            group = InetAddress.getByName("239.0.0.222");
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
         MulticastSocket socket = null;
         try {
-            socket = new MulticastSocket(6789);
+            socket = new MulticastSocket(5000);
             socket.joinGroup(group);
         } catch (IOException e) {
             e.printStackTrace();
@@ -46,7 +44,7 @@ class SendThread implements Runnable {
             String msg = in.nextLine();
             msg = "MSG " + nick + ": " + msg;
             DatagramPacket dp = new DatagramPacket(msg.getBytes(), msg.length(),
-                    group, 6789);
+                    group, 5000);
 
             try {
                 socket.send(dp);

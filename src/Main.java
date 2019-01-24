@@ -12,7 +12,7 @@ public class Main {
         String nick = in.nextLine();
         nick = "NICK " + nick;
         DatagramPacket dp = new DatagramPacket(nick.getBytes(), nick.length(),
-                group, 6789);
+                group, 5000);
 
         try {
             socket.send(dp);
@@ -64,11 +64,11 @@ public class Main {
 
         InetAddress group = null;
         try {
-            group = InetAddress.getByName("228.5.6.7");
+            group = InetAddress.getByName("239.0.0.222");
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
-        MulticastSocket socket = new MulticastSocket(6789);
+        MulticastSocket socket = new MulticastSocket(5000);
         socket.joinGroup(group);
 
         Scanner in = new Scanner(System.in);
