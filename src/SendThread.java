@@ -9,11 +9,12 @@ class SendThread implements Runnable {
 
     private MulticastSocket socket;
     private InetAddress group;
-    private String nick;
+    private String nick, room;
     Thread t;
 
-    public SendThread(String nick) {
+    public SendThread(String nick, String room) {
         this.nick = nick;
+        this.room = room;
         t = new Thread(this);
         t.start();
     }
@@ -21,7 +22,8 @@ class SendThread implements Runnable {
     @Override
     public void run() {
 
-        nick = nick.substring(4, nick.length());
+        nick = nick.substring(5, nick.length());
+        //teraz w nick "nazwa"
 
         InetAddress group = null;
         try {
@@ -36,6 +38,17 @@ class SendThread implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        String joinRoomNick = "JOIN " + room + " " + nick;
+        DatagramPacket joinRN = new DatagramPacket(joinRoomNick.getBytes(), joinRoomNick.length(),
+                group, 5000);
+        try {
+            socket.send(joinRN);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
 
         Scanner in = new Scanner(System.in);
 

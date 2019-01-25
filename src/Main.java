@@ -28,7 +28,7 @@ public class Main {
 
         String nick = getNick(group, socket);
 
-        socket.setSoTimeout(10000);
+        socket.setSoTimeout(1000);
 
         int condition = 0;
 
@@ -75,10 +75,13 @@ public class Main {
         String nick = loop(group, socket);
 
         System.out.println("zostałeś zarejestrowany!");
+        System.out.println("podaj nazwe pokoju:");
+        String room = in.nextLine();
 
 
-        SendThread w1 = new SendThread(nick);
-        ListenThread w2 = new ListenThread(nick);
+
+        SendThread w1 = new SendThread(nick, room);
+        ListenThread w2 = new ListenThread(nick, room);
 
         try {
             w1.t.join();
