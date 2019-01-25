@@ -86,17 +86,17 @@ class ListenThread implements Runnable {
                     }
                     if(matcherLEFT.find()){
                         if (matcherROOM.find()){
-                            // MSG nick: LEFT room nick
-                            int nickLength = (received.length() - 15) / 2;
-                            if((room + " ").equals(received.substring(11 + nickLength, 11+ nickLength + room.length() + 1))) {
+                            // MSG nick room: LEFT room nick
+                            int nickLength = (received.length() - (13 + 2 * room.length())) / 2;
+                            if((room + ":").equals(received.substring(5 + nickLength, 5+ nickLength + room.length() + 1))) {
                                 String receivedNick = received.substring(4, 4+nickLength);
                                 if(!(receivedNick.equals(nick.substring(5, nick.length())))) {
                                     System.out.println(receivedNick + " opuscil Twoj pokoj (" + room + ")");
                                 }
                             }
                         }
-
                     }
+                    // MSG nick room: msg
 
                     System.out.println(received);
                 }

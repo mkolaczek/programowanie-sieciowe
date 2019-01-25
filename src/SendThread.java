@@ -55,7 +55,7 @@ class SendThread implements Runnable {
         while (true) {
 
             String msg = in.nextLine();
-            msg = "MSG " + nick + ": " + msg;
+            msg = "MSG " + nick + " " + room + ": " + msg;
             DatagramPacket dp = new DatagramPacket(msg.getBytes(), msg.length(),
                     group, 5000);
 
