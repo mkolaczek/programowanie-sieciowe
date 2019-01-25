@@ -77,12 +77,12 @@ public class Main {
         System.out.println("zostałeś zarejestrowany!");
 
         System.out.println("podaj nazwe pokoju:");
-        String room = in.nextLine();
+//        String room = in.nextLine();
+        Room roomClass = new Room(in.nextLine());
 
 
-
-        SendThread w1 = new SendThread(nick, room);
-        ListenThread w2 = new ListenThread(nick, room);
+        SendThread w1 = new SendThread(nick, roomClass);
+        ListenThread w2 = new ListenThread(nick, roomClass);
 
         try {
             w1.t.join();

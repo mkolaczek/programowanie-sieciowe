@@ -11,15 +11,17 @@ class ListenThread implements Runnable {
     Thread t;
     private InetAddress group;
     private MulticastSocket socket;
-    private String nick, room;
+    private String nick;
+    private Room roomClass;
 
 
-    public ListenThread(String nick, String room) {
+    public ListenThread(String nick, Room roomClass) {
         this.nick = nick;
-        this.room = room;
+        this.roomClass = roomClass;
         t = new Thread(this);
         t.start();
     }
+
 
     @Override
     public void run() {
@@ -41,6 +43,8 @@ class ListenThread implements Runnable {
         byte[] buf = new byte[1024];
 
         while (true) {
+
+            String room = roomClass.getRoom();
 
 
             DatagramPacket recv = new DatagramPacket(buf, buf.length);
@@ -72,25 +76,25 @@ class ListenThread implements Runnable {
                 } else if (matcherNICK.find()) {
                     // nie rob nic
                 } else {
-                    if (matcherJOIN.find()){
-                        if (matcherROOM.find()){
-                            if((room + " ").equals(received.substring(5, 5 + room.length() + 1))) {
+                    if (matcherJOIN.find()) {
+                        if (matcherROOM.find()) {
+                            if ((room + " ").equals(received.substring(5, 5 + room.length() + 1))) {
                                 int endLength = received.length();
                                 int startLength = 5 + room.length() + 1;
                                 String receivedNick = received.substring(startLength, endLength);
-                                if(!(receivedNick.equals(nick.substring(5, nick.length())))) {
+                                if (!(receivedNick.equals(nick.substring(5, nick.length())))) {
                                     System.out.println(receivedNick + " przylaczyl sie do Twojego pokoju (" + room + ")");
                                 }
                             }
                         }
                     }
-                    if(matcherLEFT.find()){
-                        if (matcherROOM.find()){
+                    if (matcherLEFT.find()) {
+                        if (matcherROOM.find()) {
                             // MSG nick room: LEFT room nick
                             int nickLength = (received.length() - (13 + 2 * room.length())) / 2;
-                            if((room + ":").equals(received.substring(5 + nickLength, 5+ nickLength + room.length() + 1))) {
-                                String receivedNick = received.substring(4, 4+nickLength);
-                                if(!(receivedNick.equals(nick.substring(5, nick.length())))) {
+                            if ((room + ":").equals(received.substring(5 + nickLength, 5 + nickLength + room.length() + 1))) {
+                                String receivedNick = received.substring(4, 4 + nickLength);
+                                if (!(receivedNick.equals(nick.substring(5, nick.length())))) {
                                     System.out.println(receivedNick + " opuscil Twoj pokoj (" + room + ")");
                                 }
                             }
@@ -98,15 +102,26 @@ class ListenThread implements Runnable {
                     }
 
                     // MSG nick room: msg
-                    if (matcherROOM.find()){
-                        Pattern pattern = Pattern.compile("MSG (\\w+) " + room + ":.*");
-                        Matcher matcher = pattern.matcher(received);
-                        matcher.matches();
-                        String receivedNick = matcher.group(1);
-                        String msg = received.substring(7+receivedNick.length()+room.length(),
-                                received.length());
-                        System.out.println(receivedNick + ": " + msg);
+                    if (matcherROOM.find()) {
+                        try {
+                            Pattern pattern = Pattern.compile("MSG (\\w+) " + room + ":.*");
+                            Matcher matcher = pattern.matcher(received);
+                            matcher.matches();
+                            String receivedNick = matcher.group(1);
+                            String msg = received.substring(7 + receivedNick.length() + room.length(),
+                                    received.length());
 
+                            Pattern patternLEFT2 = Pattern.compile("LEFT");
+                            Matcher matcherLEFT2 = patternLEFT2.matcher(msg);
+
+                            if (matcherLEFT2.find()) {
+
+                            } else {
+                                System.out.println(receivedNick + ": " + msg);
+                            }
+                        } catch (IllegalStateException e) {
+                            // jest dobrze :P
+                        }
                     }
                 }
             } catch (IOException e) {

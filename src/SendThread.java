@@ -9,14 +9,23 @@ class SendThread implements Runnable {
 
     private MulticastSocket socket;
     private InetAddress group;
-    private String nick, room;
+    private String nick;
+    private Room roomClass;
     Thread t;
 
-    public SendThread(String nick, String room) {
+    public SendThread(String nick, Room room) {
         this.nick = nick;
-        this.room = room;
+        this.roomClass = room;
         t = new Thread(this);
         t.start();
+    }
+
+    private void newRoom() {
+        Scanner in = new Scanner(System.in);
+
+        this.roomClass.setRoom("");
+        System.out.println("podaj nowy pokoj:");
+        this.roomClass.setRoom(in.nextLine());
     }
 
     @Override
@@ -24,6 +33,8 @@ class SendThread implements Runnable {
 
         nick = nick.substring(5, nick.length());
         //teraz w nick "nazwa"
+
+        String room = roomClass.getRoom();
 
         InetAddress group = null;
         try {
@@ -55,9 +66,20 @@ class SendThread implements Runnable {
         while (true) {
 
             String msg = in.nextLine();
+
+            room = roomClass.getRoom();
+
+
             msg = "MSG " + nick + " " + room + ": " + msg;
+
+            // MSG nick room: LEFT room nick
+            if (msg.equals("MSG " + nick + " " + room + ": LEFT " + room + " " + nick)) {
+                newRoom();
+            }
+
             DatagramPacket dp = new DatagramPacket(msg.getBytes(), msg.length(),
                     group, 5000);
+
 
             try {
                 socket.send(dp);
@@ -65,6 +87,8 @@ class SendThread implements Runnable {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+
         }
     }
 }
