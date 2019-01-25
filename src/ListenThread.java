@@ -9,15 +9,15 @@ import java.util.regex.Pattern;
 class ListenThread implements Runnable {
 
     Thread t;
-    private InetAddress group;
-    private MulticastSocket socket;
     private String nick;
     private Room roomClass;
+    private WhoIsRoom whoIsRoom;
 
 
-    public ListenThread(String nick, Room roomClass) {
+    public ListenThread(String nick, Room roomClass, WhoIsRoom whoIsRoom) {
         this.nick = nick;
         this.roomClass = roomClass;
+        this.whoIsRoom = whoIsRoom;
         t = new Thread(this);
         t.start();
     }
@@ -64,6 +64,9 @@ class ListenThread implements Runnable {
                 Pattern patternLEFT = Pattern.compile("LEFT");
                 Matcher matcherLEFT = patternLEFT.matcher(received);
 
+                Pattern patternWHOIS = Pattern.compile("WHOIS");
+                Matcher matcherWHOIS = patternWHOIS.matcher(received);
+
 
                 // w nick "NICK nick"
                 if (received.equals(nick)) {
@@ -101,6 +104,16 @@ class ListenThread implements Runnable {
                         }
                     }
 
+                    if (matcherWHOIS.find()) {
+                        if (matcherROOM.find()) {
+                            String whoisMsg = room.toUpperCase() + " " + room + " " + nick.substring(5, nick.length());
+//                            System.out.println(whoisMsg);
+                            DatagramPacket dp = new DatagramPacket(whoisMsg.getBytes(), whoisMsg.length(),
+                                    group, 5000);
+                            socket.send(dp);
+                        }
+                    }
+
                     // MSG nick room: msg
                     if (matcherROOM.find()) {
                         try {
@@ -115,12 +128,20 @@ class ListenThread implements Runnable {
                             Matcher matcherLEFT2 = patternLEFT2.matcher(msg);
 
                             if (matcherLEFT2.find()) {
-
+                                // nie rob nic
                             } else {
-                                System.out.println(receivedNick + ": " + msg);
+                                Matcher matcherWHOIS2 = patternWHOIS.matcher(msg);
+                                if (matcherWHOIS2.find()) {
+                                    // nie rob nic
+                                } else
+                                    System.out.println(receivedNick + ": " + msg);
                             }
                         } catch (IllegalStateException e) {
-                            // jest dobrze :P
+                            Pattern patternROOM2 = Pattern.compile(room.toUpperCase());
+                            Matcher matcherROOM2 = patternROOM2.matcher(received);
+                            if (matcherROOM2.find()) {
+                                whoIsRoom.addToList(received.substring(room.length() * 2 + 2, received.length()));
+                            }
                         }
                     }
                 }

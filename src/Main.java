@@ -80,9 +80,10 @@ public class Main {
 //        String room = in.nextLine();
         Room roomClass = new Room(in.nextLine());
 
+        WhoIsRoom whoIsRoom = new WhoIsRoom();
 
-        SendThread w1 = new SendThread(nick, roomClass);
-        ListenThread w2 = new ListenThread(nick, roomClass);
+        SendThread w1 = new SendThread(nick, roomClass,  whoIsRoom);
+        ListenThread w2 = new ListenThread(nick, roomClass,  whoIsRoom);
 
         try {
             w1.t.join();
