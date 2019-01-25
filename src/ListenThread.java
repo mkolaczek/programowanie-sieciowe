@@ -57,6 +57,9 @@ class ListenThread implements Runnable {
                 Pattern patternROOM = Pattern.compile(room);
                 Matcher matcherROOM = patternROOM.matcher(received);
 
+                Pattern patternLEFT = Pattern.compile("LEFT");
+                Matcher matcherLEFT = patternLEFT.matcher(received);
+
 
                 // w nick "NICK nick"
                 if (received.equals(nick)) {
@@ -81,6 +84,20 @@ class ListenThread implements Runnable {
                             }
                         }
                     }
+                    if(matcherLEFT.find()){
+                        if (matcherROOM.find()){
+                            // MSG nick: LEFT room nick
+                            int nickLength = (received.length() - 15) / 2;
+                            if((room + " ").equals(received.substring(11 + nickLength, 11+ nickLength + room.length() + 1))) {
+                                String receivedNick = received.substring(4, 4+nickLength);
+                                if(!(receivedNick.equals(nick.substring(5, nick.length())))) {
+                                    System.out.println(receivedNick + " opuscil Twoj pokoj (" + room + ")");
+                                }
+                            }
+                        }
+
+                    }
+
                     System.out.println(received);
                 }
             } catch (IOException e) {
