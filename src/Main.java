@@ -75,6 +75,7 @@ public class Main {
         String nick = loop(group, socket);
 
         System.out.println("zostałeś zarejestrowany!");
+
         System.out.println("podaj nazwe pokoju:");
         String room = in.nextLine();
 

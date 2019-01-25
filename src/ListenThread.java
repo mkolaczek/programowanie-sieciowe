@@ -96,9 +96,18 @@ class ListenThread implements Runnable {
                             }
                         }
                     }
-                    // MSG nick room: msg
 
-                    System.out.println(received);
+                    // MSG nick room: msg
+                    if (matcherROOM.find()){
+                        Pattern pattern = Pattern.compile("MSG (\\w+) " + room + ":.*");
+                        Matcher matcher = pattern.matcher(received);
+                        matcher.matches();
+                        String receivedNick = matcher.group(1);
+                        String msg = received.substring(7+receivedNick.length()+room.length(),
+                                received.length());
+                        System.out.println(receivedNick + ": " + msg);
+
+                    }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
